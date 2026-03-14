@@ -5,6 +5,8 @@ from datasets import load_dataset
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 import numpy as np
+import matplotlib.pyplot as plt
+import os
 import warnings
 warnings.filterwarnings("ignore")
 
@@ -107,6 +109,7 @@ def run_simulation():
     lookahead_snapshot = None
     
     print("\nStarting Training Loop...")
+    losses = []
     for iter in range(1, iterations + 1):
         # 1. Forward Pass
         outputs = model(X_train_tensor)
@@ -158,6 +161,18 @@ def run_simulation():
 
         if iter % 20 == 0:
             print(f"Iteration {iter} | Loss: {loss.item():.4f}")
+        losses.append(loss.item())
+
+    os.makedirs('out', exist_ok=True)
+    plt.figure(figsize=(8, 5))
+    plt.plot(range(1, iterations + 1), losses, label='BCE Loss')
+    plt.xlabel('Iteration')
+    plt.ylabel('Loss')
+    plt.title('HC-LA-VI Simulation Loss Convergence')
+    plt.grid(True)
+    plt.legend()
+    plt.savefig('out/simulation_loss.png')
+    print("Saved simulation loss plot to out/simulation_loss.png")
 
     print("\n--- Simulation Complete ---")
     
